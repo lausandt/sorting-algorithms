@@ -1,2 +1,2 @@
 # sorting-algorithms
-Different sorting algorithms in Java and Haskell
+This is an investigation of different sorting algorithms in Java and Haskell. 
