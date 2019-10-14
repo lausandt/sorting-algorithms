@@ -1,0 +1,86 @@
+/**
+ * 
+ */
+package sorting;
+
+import java.util.Comparator;
+
+import stacks_queues.LinkedQueue;
+import stacks_queues.Queue;
+
+
+
+/**
+ * This an implementation of quicksort with a queue
+ * quicksort works by taking a random pivot
+ * comparing if the the rest of the elements are less then, equal to, or bigger then the pivot
+ * recursive call on the smaller lists
+ * and concatenate 
+ * the expected complexity is O(n log n) 
+ * the worst case complexity is O(n^2)
+ * 
+ * random quick-sort takes a pivot at random and can be proven to a high probability to be complexity O(n log n)
+ * 
+ * There is an in-place alternative (in-place as in using little more memory than the input size)
+ * The in-place alternativer uses an array
+ * 
+ * @author Lau Sandt
+ * https://github.com/lausandt/sorting-algorithms
+ *
+ */
+public class QuickSort {
+	
+	public static <K> void quickSort(Queue<K> S, Comparator<K> comp) {
+		int n = S.size();
+		if (n < 2) return;					// problem is trivially solved
+		K pivot = S.first();				// arbitrary chosen pivot
+		Queue<K> L = new LinkedQueue<>();   // Queues to as subs 
+		Queue<K> E = new LinkedQueue<>();
+		Queue<K> G = new LinkedQueue<>();
+		while (!S.isEmpty()) {
+			K element = S.dequeue();		// finds, returns and removes the first element of the queque
+			int c = comp.compare(element, pivot);
+			if (c < 0)
+				L.enqueue(element);
+			else if (c == 0)
+				E.enqueue(element);
+			else
+				G.enqueue(element);
+		}
+		quickSort(L, comp);					// sorts lower
+		quickSort(G, comp);					// sorts higher
+		while (!L.isEmpty())
+			S.enqueue(L.dequeue());
+		while (!E.isEmpty())
+			S.enqueue(E.dequeue());
+		while (!G.isEmpty())
+			S.enqueue(G.dequeue());
+	}
+	
+	/** sort subarray S[a..b] inclusive */
+	public static <K> void quickSortInPlace(K[] S, Comparator<K> comp, int a, int b) {
+		if (a >= b) return;				// subarray is trivially sorted
+		int left = a;
+		int right = b-1;
+		K pivot = S[b];					// b is the last element of S
+		K temp;							// need for swapping
+		while (left <= right) {
+			// scan until reaching a value equal or larger than pivot or right marker
+			while (left <= right && comp.compare(S[left], pivot) < 0) left++;
+			// scan until reaching a value equal or smaller than pivot or left marker
+			while (left <= right && comp.compare(S[right], pivot) > 0) right++;
+			if (left <= right) {
+				temp = S[left];
+				S[left] = S[right];
+				S[right] = temp;
+				left++; right--;
+			}
+		}
+		// put pivot into its final place
+		temp = S[left];
+		S[left] = S[b];
+		S[b] = temp;
+		quickSortInPlace(S, comp, a, left-1);
+		quickSortInPlace(S, comp, left+1, b);
+	}
+	
